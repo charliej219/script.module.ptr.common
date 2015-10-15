@@ -1,0 +1,180 @@
+ó
+\¸˜Rc           @   s‘   d  Z  d d l Z d d l Z d d l Z d d l Z d d l Z d d l Z d e j f d „  ƒ  YZ d d	 d „  ƒ  YZ	 d d
+ d „  ƒ  YZ
+ d S(   sÂ  
+    common XBMC Module
+    Copyright (C) 2011 t0mm0
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+iÿÿÿÿNt   HeadRequestc           B   s   e  Z d  Z d „  Z RS(   s(   A Request class that sends HEAD requestsc         C   s   d S(   Nt   HEAD(    (   t   self(    (    sJ   /storage/.xbmc/addons/script.module.ptr.common/lib/ptr/common/net.pyt
+   get_method   s    (   t   __name__t
+   __module__t   __doc__R   (    (    (    sJ   /storage/.xbmc/addons/script.module.ptr.common/lib/ptr/common/net.pyR       s   t   Netc           B   sÉ   e  Z d  Z e j ƒ  Z d Z d d Z e	 Z
+ d d d e	 d „ Z d „  Z d „  Z
+ d „  Z d „  Z d	 „  Z d
+ „  Z d „  Z d „  Z i  e d
+ „ Z i  e d „ Z i  d „ Z i  i  e d „ Z RS(   sX  
+    This class wraps :mod:`urllib2` and provides an easy way to make http
+    requests while taking care of cookies, proxies, gzip compression and 
+    character encoding.
+    
+    Example::
+    
+        from t0mm0.common.net import Net
+        net = Net()
+        response = net.http_GET('http://xbmc.org')
+        print response.content
+    s0   Mozilla/5.0 (X11; Linux i686) AppleWebKit/535.1 s3   (KHTML, like Gecko) Chrome/13.0.782.99 Safari/535.1t    c         C   sY   | r |  j  | ƒ n  | r, |  j | ƒ n  | rB |  j | ƒ n  | |  _ |  j ƒ  d S(   s  
+        Kwargs:
+            cookie_file (str): Full path to a file to be used to load and save
+            cookies to.
+            
+            proxy (str): Proxy setting (eg. 
+            ``'http://user:pass@example.com:1234'``)
+            
+            user_agent (str): String to use as the User Agent header. If not 
+            supplied the class will use a default user agent (chrome)
+            
+            http_debug (bool): Set ``True`` to have HTTP header info written to
+            the XBMC log for all requests.
+        N(   t   set_cookiest	   set_proxyt   set_user_agentt   _http_debugt   _update_opener(   R   t   cookie_filet   proxyt
+   user_agentt
+   http_debug(    (    sJ   /storage/.xbmc/addons/script.module.ptr.common/lib/ptr/common/net.pyt   __init__4   s    	c         C   s7   y( |  j  j | d t ƒ|  j ƒ  t SWn t SXd S(   sÑ   
+        Set the cookie file and try to load cookies from it if it exists.
+        
+        Args:
+            cookie_file (str): Full path to a file to be used to load and save
+            cookies to.
+        t   ignore_discardN(   t   _cjt   loadt   TrueR
+   t   False(   R   R   (    (    sJ   /storage/.xbmc/addons/script.module.ptr.common/lib/ptr/common/net.pyR	   N   s    
+c         C   s
+   |  j  j S(   sA   Returns A dictionary containing all cookie information by domain.(   R   t   _cookies(   R   (    (    sJ   /storage/.xbmc/addons/script.module.ptr.common/lib/ptr/common/net.pyt   get_cookies^   s    c         C   s   |  j  j | d t ƒd S(   sˆ   
+        Saves cookies to a file.
+        
+        Args:
+            cookie_file (str): Full path to a file to save cookies to.
+        R   N(   R   t   saveR   (   R   R   (    (    sJ   /storage/.xbmc/addons/script.module.ptr.common/lib/ptr/common/net.pyt   save_cookiesc   s    c         C   s   | |  _  |  j ƒ  d S(   sy   
+        Args:
+            proxy (str): Proxy setting (eg. 
+            ``'http://user:pass@example.com:1234'``)
+        N(   t   _proxyR
+   (   R   R   (    (    sJ   /storage/.xbmc/addons/script.module.ptr.common/lib/ptr/common/net.pyR
+   m   s    	c         C   s   |  j  S(   s(   Returns string containing proxy details.(   R   (   R   (    (    sJ   /storage/.xbmc/addons/script.module.ptr.common/lib/ptr/common/net.pyt	   get_proxyw   s    c         C   s
+   | |  _  d S(   s]   
+        Args:
+            user_agent (str): String to use as the User Agent header.
+        N(   t   _user_agent(   R   R   (    (    sJ   /storage/.xbmc/addons/script.module.ptr.common/lib/ptr/common/net.pyR   |   s    c         C   s   |  j  S(   s   Returns user agent string.(   R   (   R   (    (    sJ   /storage/.xbmc/addons/script.module.ptr.common/lib/ptr/common/net.pyt   get_user_agent„   s    c         C   s«   |  j  r t j d d ƒ } n t j ƒ  } |  j rs t j t j |  j ƒ t j i |  j d 6ƒ t j ƒ  | ƒ } n' t j t j |  j ƒ t j ƒ  | ƒ } t j	 | ƒ d S(   sv   
+        Builds and installs a new opener to be used by all future calls to 
+        :func:`urllib2.urlopen`.
+        t
+   debugleveli   t   httpN(
+   R   t   urllib2t   HTTPHandlerR   t   build_openert   HTTPCookieProcessorR   t   ProxyHandlert   HTTPBasicAuthHandlert   install_opener(   R   R!   t   opener(    (    sJ   /storage/.xbmc/addons/script.module.ptr.common/lib/ptr/common/net.pyR
+   ‰   s    			
+			c         C   s   |  j  | d | d | ƒS(   s'  
+        Perform an HTTP GET request.
+        
+        Args:
+            url (str): The URL to GET.
+            
+        Kwargs:
+            headers (dict): A dictionary describing any headers you would like
+            to add to the request. (eg. ``{'X-Test': 'testing'}``)
+
+            compression (bool): If ``True`` (default), try to use gzip 
+            compression.
+            
+        Returns:
+            An :class:`HttpResponse` object containing headers and other 
+            meta-information about the page and the page content.
+        t   headerst   compression(   t   _fetch(   R   t   urlR*   R+   (    (    sJ   /storage/.xbmc/addons/script.module.ptr.common/lib/ptr/common/net.pyt   http_GET¡   s    c         C   s   |  j  | | d | d | ƒS(   sk  
+        Perform an HTTP POST request.
+        
+        Args:
+            url (str): The URL to POST.
+            
+            form_data (dict): A dictionary of form data to POST.
+            
+        Kwargs:
+            headers (dict): A dictionary describing any headers you would like
+            to add to the request. (eg. ``{'X-Test': 'testing'}``)
+
+            compression (bool): If ``True`` (default), try to use gzip 
+            compression.
+
+        Returns:
+            An :class:`HttpResponse` object containing headers and other 
+            meta-information about the page and the page content.
+        R*   R+   (   R,   (   R   R-   t	   form_dataR*   R+   (    (    sJ   /storage/.xbmc/addons/script.module.ptr.common/lib/ptr/common/net.pyt	   http_POST¶   s    c         C   se   t  | ƒ } | j d |  j ƒ x* | j ƒ  D] \ } } | j | | ƒ q, Wt j | ƒ } t | ƒ S(   s©  
+        Perform an HTTP HEAD request.
+        
+        Args:
+            url (str): The URL to GET.
+        
+        Kwargs:
+            headers (dict): A dictionary describing any headers you would like
+            to add to the request. (eg. ``{'X-Test': 'testing'}``)
+        
+        Returns:
+            An :class:`HttpResponse` object containing headers and other 
+            meta-information about the page.
+        s
+   User-Agent(   R    t
+   add_headerR   t   itemsR"   t   urlopent   HttpResponse(   R   R-   R*   t   reqt   kt   vt   response(    (    sJ   /storage/.xbmc/addons/script.module.ptr.common/lib/ptr/common/net.pyt	   http_HEADÎ   s    c   
+      C   s±   d } t  j | ƒ } | r? t j | ƒ } t  j | | ƒ } n  | j d |  j ƒ x* | j ƒ  D] \ } } | j | | ƒ q_ W| r˜ | j d d ƒ n  t  j | ƒ }	 t |	 ƒ S(   s×  
+        Perform an HTTP GET or POST request.
+        
+        Args:
+            url (str): The URL to GET or POST.
+            
+            form_data (dict): A dictionary of form data to POST. If empty, the 
+            request will be a GET, if it contains form data it will be a POST.
+            
+        Kwargs:
+            headers (dict): A dictionary describing any headers you would like
+            to add to the request. (eg. ``{'X-Test': 'testing'}``)
+
+            compression (bool): If ``True`` (default), try to use gzip 
+            compression.
+
+        Returns:
+            An :class:`HttpResponse` object containing headers and other 
+            meta-information about the page and the page content.
+        R   s
+   User-Agents   Accept-Encodingt   gzip(	   R"   t   Requestt   urllibt	   urlencodeR1   R   R2   R3   R4   (
+   R   R-   R/   R*   R+   t   encodingR5   R6   R7   R8   (    (    sJ   /storage/.xbmc/addons/script.module.ptr.common/lib/ptr/common/net.pyR,   å   s    N(   R   R   R   t	   cookielibt   LWPCookieJarR   t   NoneR   R   R   R   R   R	   R   R   R
+   R   R   R   R
+   R   R.   R0   R9   R,   (    (    (    sJ   /storage/.xbmc/addons/script.module.ptr.common/lib/ptr/common/net.pyR      s(   				
+	
+				R4   c           B   s/   e  Z d  Z d Z d „  Z d „  Z d „  Z RS(   s  
+    This class represents a resoponse from an HTTP request.
+    
+    The content is examined and every attempt is made to properly encode it to
+    Unicode.
+    
+    .. seealso::
+        :meth:`Net.http_GET`, :meth:`Net.http_HEAD` and :meth:`Net.http_POST` 
+    R   c         C   sû   | |  _  | j ƒ  } yA | j d j ƒ  d k rU t j d t j | ƒ ƒ j ƒ  } n  Wn n Xy3 | j d } d | k r’ | j d ƒ d } n  Wn n Xt j	 d d | t j
+ ƒ } | rÑ | j d	 ƒ } n  y t | | ƒ } Wn n X| |  _
+ d
+ S(   s   
+        Args:
+            response (:class:`mimetools.Message`): The object returned by a call
+            to :func:`urllib2.urlopen`.
+        s   content-encodingR:   t   fileobjs   content-types   charset=iÿÿÿÿs5   <meta\s+http-equiv="Content-Type"\s+content="(?:.+?);s   \s+charset=(.+?)"i   N(   t	   _responset   readR*   t   lowerR:   t   GzipFilet   StringIOt   splitt   ret   searcht
+   IGNORECASEt   groupt   unicodet   content(   R   R8   t   htmlt   content_typeR>   t   r(    (    sJ   /storage/.xbmc/addons/script.module.ptr.common/lib/ptr/common/net.pyR     s,    	(
+	c         C   s   |  j  j ƒ  j S(   s1   Returns a List of headers returned by the server.(   RC   t   infoR*   (   R   (    (    sJ   /storage/.xbmc/addons/script.module.ptr.common/lib/ptr/common/net.pyt   get_headers:  s    c         C   s
+   |  j  j ƒ  S(   s{   
+        Return the URL of the resource retrieved, commonly used to determine if 
+        a redirect was followed.
+        (   RC   t   geturl(   R   (    (    sJ   /storage/.xbmc/addons/script.module.ptr.common/lib/ptr/common/net.pyt   get_url?  s    (   R   R   R   RN   R   RS   RU   (    (    (    sJ   /storage/.xbmc/addons/script.module.ptr.common/lib/ptr/common/net.pyR4   	  s
+   		"	(    (    (   R   R?   R:   RI   RG   R<   R"   R;   R    R   R4   (    (    (    sJ   /storage/.xbmc/addons/script.module.ptr.common/lib/ptr/common/net.pyt   <module>   s   ê
