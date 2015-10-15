@@ -1,0 +1,476 @@
+ó
+\¸˜Rc           @   s¯   d  Z  d d l Z d d l Z d d l Z y d d l Z Wn d d l Z n Xd d l Z d d l Z d d l Z d d l	 Z	 d d l
+ Z
+ d d l Z d d d „  ƒ  YZ d S(   sÂ  
+    common XBMC Module
+    Copyright (C) 2011 t0mm0
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+iÿÿÿÿNt   Addonc        
+   B   s  e  Z d  Z d2 d „ Z d „  Z d „  Z d „  Z d „  Z d „  Z	 d „  Z
+ d „  Z d	 „  Z d
+ „  Z
+ d „  Z d „  Z d
+ „  Z d „  Z d „  Z d „  Z d „  Z i d d 6d „ Z d „  Z e j d „ Z d „  Z d „  Z d „  Z d2 e d „ Z d „  Z d d d d d „ Z  d d d „ Z! d  „  Z" d! „  Z# e d" „ Z$ e d# „ Z% e d$ „ Z& d e d d e d% e d& e d' „	 Z' d e d d e d% e d( „ Z( d e d d e d% e d) „ Z) d e d d d% e* d* „ Z+ d+ „  Z, d, „  Z- d- „  Z. d. „  Z/ d/ „  Z0 d0 „  Z1 d1 „  Z2 RS(3   sf  
+    This class provides a lot of code that is used across many XBMC addons
+    in the hope that it will simplify some of the common tasks an addon needs
+    to perform.
+    
+    Mostly this is achieved by providing a wrapper around commonly used parts
+    of :mod:`xbmc`, :mod:`xbmcaddon`, :mod:`xbmcgui` and :mod:`xbmcplugin`. 
+    
+    You probably want to have exactly one instance of this class in your addon
+    which you can call from anywhere in your code.
+    
+    Example::
+        
+        import sys
+        from t0mm0.common.addon import Addon
+        addon = Addon('my.plugin.id', argv=sys.argv)
+    c         C   s\   t  j d | ƒ |  _ | rX | d |  _ t | d ƒ |  _ |  j | d d ƒ |  _ n  d S(   só           
+        Args:
+            addon_id (str): Your addon's id (eg. 'plugin.video.t0mm0.test').
+            
+        Kwargs:
+            argv (list): List of arguments passed to your addon if applicable
+            (eg. sys.argv).
+        t   idi    i   i   N(   t	   xbmcaddonR    t   addont   urlt   intt   handlet   parse_queryt   queries(   t   selft   addon_idt   argv(    (    sL   /storage/.xbmc/addons/script.module.ptr.common/lib/ptr/common/addon.pyt   __init__5   s
+    	
+c         C   s   |  j  j d ƒ S(   s5   Returns the addon author as defined in ``addon.xml``.t   author(   R   t   getAddonInfo(   R	   (    (    sL   /storage/.xbmc/addons/script.module.ptr.common/lib/ptr/common/addon.pyt
+   get_authorE   s    c         C   s   |  j  j d ƒ S(   s   Returns the addon changelog.t	   changelog(   R   R   (   R	   (    (    sL   /storage/.xbmc/addons/script.module.ptr.common/lib/ptr/common/addon.pyt
+   get_changelogJ   s    c         C   s   |  j  j d ƒ S(   s:   Returns the addon description as defined in ``addon.xml``.t   description(   R   R   (   R	   (    (    sL   /storage/.xbmc/addons/script.module.ptr.common/lib/ptr/common/addon.pyt   get_descriptionO   s    c         C   s   |  j  j d ƒ S(   s9   Returns the addon disclaimer as defined in ``addon.xml``.t
+   disclaimer(   R   R   (   R	   (    (    sL   /storage/.xbmc/addons/script.module.ptr.common/lib/ptr/common/addon.pyt   get_disclaimerT   s    c         C   s   |  j  j d ƒ S(   s*   Returns the full path to the addon fanart.t   fanart(   R   R   (   R	   (    (    sL   /storage/.xbmc/addons/script.module.ptr.common/lib/ptr/common/addon.pyt
+   get_fanartY   s    c         C   s   |  j  j d ƒ S(   s(   Returns the full path to the addon icon.t   icon(   R   R   (   R	   (    (    sL   /storage/.xbmc/addons/script.module.ptr.common/lib/ptr/common/addon.pyt   get_icon^   s    c         C   s   |  j  j d ƒ S(   s1   Returns the addon id as defined in ``addon.xml``.R   (   R   R   (   R	   (    (    sL   /storage/.xbmc/addons/script.module.ptr.common/lib/ptr/common/addon.pyt   get_idc   s    c         C   s   |  j  j d ƒ S(   s3   Returns the addon name as defined in ``addon.xml``.t   name(   R   R   (   R	   (    (    sL   /storage/.xbmc/addons/script.module.ptr.common/lib/ptr/common/addon.pyt   get_nameh   s    c         C   s   |  j  j d ƒ S(   s-   Returns the full path to the addon directory.t   path(   R   R   (   R	   (    (    sL   /storage/.xbmc/addons/script.module.ptr.common/lib/ptr/common/addon.pyt   get_pathm   s    c         C   s   t  j |  j j d ƒ ƒ S(   s   
+        Returns the full path to the addon profile directory 
+        (useful for storing files needed by the addon such as cookies).
+        t   profile(   t   xbmct
+   translatePathR   R   (   R	   (    (    sL   /storage/.xbmc/addons/script.module.ptr.common/lib/ptr/common/addon.pyt   get_profiler   s    c         C   s   |  j  j d ƒ S(   s+   Returns the number of stars for this addon.t   stars(   R   R   (   R	   (    (    sL   /storage/.xbmc/addons/script.module.ptr.common/lib/ptr/common/addon.pyt	   get_starsz   s    c         C   s   |  j  j d ƒ S(   s6   Returns the addon summary as defined in ``addon.xml``.t   summary(   R   R   (   R	   (    (    sL   /storage/.xbmc/addons/script.module.ptr.common/lib/ptr/common/addon.pyt   get_summary   s    c         C   s   |  j  j d ƒ S(   sp   
+        Returns the addon summary as defined in ``addon.xml`` 
+        (eg. xbmc.python.pluginsource).
+        t   type(   R   R   (   R	   (    (    sL   /storage/.xbmc/addons/script.module.ptr.common/lib/ptr/common/addon.pyt   get_type„   s    c         C   s   |  j  j d ƒ S(   s6   Returns the addon version as defined in ``addon.xml``.t   version(   R   R   (   R	   (    (    sL   /storage/.xbmc/addons/script.module.ptr.common/lib/ptr/common/addon.pyt   get_versionŒ   s    c         C   s   |  j  j | ƒ S(   s$  
+        Returns an addon setting. Settings must be defined in your addon's
+        ``resources/settings.xml`` file.
+        
+        Args:
+            setting (str): Name of the setting to be retrieved.
+            
+        Returns:
+            str containing the requested setting.
+        (   R   t
+   getSetting(   R	   t   setting(    (    sL   /storage/.xbmc/addons/script.module.ptr.common/lib/ptr/common/addon.pyt   get_setting‘   s    c         C   s   |  j  j | ƒ S(   sH  
+        Returns a localized string. Strings must be defined in your addon's
+        ``resources/language/[lang_name]/strings.xml`` file.
+        
+        Args:
+            string_id (int): id of the translated string to retrieve.
+            
+        Returns:
+            str containing the localized requested string.
+        (   R   t   getLocalizedString(   R	   t	   string_id(    (    sL   /storage/.xbmc/addons/script.module.ptr.common/lib/ptr/common/addon.pyt
+   get_stringŸ   s    t   maint   modec         C   sc   t  j | ƒ } | } xG | j ƒ  D]9 \ } } t | ƒ d k rQ | d | | <q" | | | <q" W| S(   s2  
+        Parse a query string as used in a URL or passed to your addon by XBMC.
+        
+        Example:
+         
+        >>> addon.parse_query('name=test&type=basic')
+        {'mode': 'main', 'name': 'test', 'type': 'basic'} 
+            
+        Args:
+            query (str): A query string.
+            
+        Kwargs:
+            defaults (dict): A dictionary containing key/value pairs parsed 
+            from the query string. If a key is repeated in the query string
+            its value will be a list containing all of that keys values.  
+        i   i    (   t   cgit   parse_qst   itemst   len(   R	   t   queryt   defaultsR   t   qt   keyt   value(    (    sL   /storage/.xbmc/addons/script.module.ptr.common/lib/ptr/common/addon.pyR   ­   s    c         C   s   |  j  d t j | ƒ S(   s   
+        Returns a ``plugin://`` URL which can be used to call the addon with 
+        the specified queries.
+        
+        Example:
+        
+        >>> addon.build_plugin_url({'name': 'test', 'type': 'basic'})
+        'plugin://your.plugin.id/?name=test&type=basic'
+        
+        
+        Args:
+            queries (dict): A dctionary of keys/values to be added to the 
+            ``plugin://`` URL.
+            
+        Retuns:
+            A string containing a fully formed ``plugin://`` URL.
+        t   ?(   R   t   urllibt	   urlencode(   R	   R   (    (    sL   /storage/.xbmc/addons/script.module.ptr.common/lib/ptr/common/addon.pyt   build_plugin_urlÈ   s    c         C   sH   t  j d t | ƒ ƒ j d d ƒ } t j d |  j ƒ  | f | ƒ d S(   sð  
+        Writes a string to the XBMC log file. The addon name is inserted into 
+        the beginning of the message automatically to help you find relevent 
+        messages in the log file.
+        
+        The available log levels are defined in the :mod:`xbmc` module and are
+        currently as follows::
+        
+            xbmc.LOGDEBUG = 0
+            xbmc.LOGERROR = 4
+            xbmc.LOGFATAL = 6
+            xbmc.LOGINFO = 1
+            xbmc.LOGNONE = 7
+            xbmc.LOGNOTICE = 2
+            xbmc.LOGSEVERE = 5
+            xbmc.LOGWARNING = 3
+        
+        Args:
+            msg (str or unicode): The message to be written to the log file.
+        
+        Kwargs:
+            level (int): The XBMC log level to write at.
+        t   NFKDt   asciit   ignores   %s: %sN(   t   unicodedatat	   normalizet   unicodet   encodeR    t   logR   (   R	   t   msgt   level(    (    sL   /storage/.xbmc/addons/script.module.ptr.common/lib/ptr/common/addon.pyRG   Ý   s    	c         C   s   |  j  | t j ƒ d S(   s  
+        Convenience method to write to the XBMC log file at the 
+        ``xbmc.LOGERROR`` error level. Use when something has gone wrong in
+        your addon code. This will show up in the log prefixed with 'ERROR:'
+        whether you have debugging switched on or not.
+        N(   RG   R    t   LOGERROR(   R	   RH   (    (    sL   /storage/.xbmc/addons/script.module.ptr.common/lib/ptr/common/addon.pyt	   log_errorú   s    c         C   s   |  j  | t j ƒ d S(   sf  
+        Convenience method to write to the XBMC log file at the 
+        ``xbmc.LOGDEBUG`` error level. Use this when you want to print out lots 
+        of detailed information that is only usefull for debugging. This will 
+        show up in the log only when debugging is enabled in the XBMC settings,
+        and will be prefixed with 'DEBUG:'.
+        N(   RG   R    t   LOGDEBUG(   R	   RH   (    (    sL   /storage/.xbmc/addons/script.module.ptr.common/lib/ptr/common/addon.pyt	   log_debug  s    c         C   s   |  j  | t j ƒ d S(   s  
+        Convenience method to write to the XBMC log file at the 
+        ``xbmc.LOGNOTICE`` error level. Use for general log messages. This will
+        show up in the log prefixed with 'NOTICE:' whether you have debugging 
+        switched on or not.
+        N(   RG   R    t	   LOGNOTICE(   R	   RH   (    (    sL   /storage/.xbmc/addons/script.module.ptr.common/lib/ptr/common/addon.pyt
+   log_notice  s    c         C   s™   | s |  j  ƒ  } n  d j | ƒ } x# t | ƒ d k  rI | j d ƒ q' W| r` |  j | ƒ n
+ |  j | ƒ t j ƒ  j | | d | d | d ƒ d S(   sŸ  
+        Display an XBMC dialog with a message and a single 'OK' button. The 
+        message is also written to the XBMC log file at the appropriate log
+        level.
+        
+        .. warning::
+            
+            Don't forget that `msg` must be a list of strings and not just a 
+            string even if you only want to display a single line!
+        
+        Example::
+        
+            addon.show_ok_dialog(['My message'], 'My Addon')
+        
+        Args:
+            msg (list of strings): The message to be displayed in the dialog. 
+            Only the first 3 list items will be displayed.
+            
+        Kwargs:
+            title (str): String to be displayed as the title of the dialog box.
+            Defaults to the addon name.
+            
+            is_error (bool): If ``True``, the log message will be written at 
+            the ERROR log level, otherwise NOTICE will be used.
+        t    i   t    i    i   i   N(	   R   t   joinR6   t   appendRK   RO   t   xbmcguit   Dialogt   ok(   R	   RH   t   titlet   is_errort   log_msg(    (    sL   /storage/.xbmc/addons/script.module.ptr.common/lib/ptr/common/addon.pyt   show_ok_dialog  s    
+c         C   s!   |  j  | d |  j ƒ  t ƒ d S(   s]  
+        Convenience method to show an XBMC dialog box with a single OK button
+        and also write the message to the log file at the ERROR log level.
+        
+        The title of the dialog will be the addon's name with the prefix 
+        'Error: '.
+        
+        .. warning::
+            
+            Don't forget that `msg` must be a list of strings and not just a 
+            string even if you only want to display a single line!
+
+        Args:
+            msg (list of strings): The message to be displayed in the dialog. 
+            Only the first 3 list items will be displayed.
+        s	   Error: %sN(   RZ   R   t   True(   R	   RH   (    (    sL   /storage/.xbmc/addons/script.module.ptr.common/lib/ptr/common/addon.pyt   show_error_dialogB  s    RQ   iˆ  c         C   s!   t  j d | | | | f ƒ d S(   sŸ  
+        Displays a small popup box in the lower right corner. The default delay 
+        is 5 seconds.
+
+        Code inspired by anarchintosh and daledude's Icefilms addon.
+
+        Example::
+
+            import os
+            logo = os.path.join(addon.get_path(), 'art','logo.jpg')
+            addon.show_small_popup('MyAddonName','Is now loaded enjoy', 5000, logo)
+
+        Kwargs:
+            title (str): title to be displayed at the top of the box
+            
+            msg (str): Main message body
+            
+            delay (int): delay in milliseconds until it disapears
+            
+            image (str): Path to the image you want to display
+        s$   XBMC.Notification("%s","%s",%d,"%s")N(   R    t   executebuiltin(   R	   RW   RH   t   delayt   image(    (    sL   /storage/.xbmc/addons/script.module.ptr.common/lib/ptr/common/addon.pyt   show_small_popupV  s    	c         C   s
+  t  j ƒ  } | j | ƒ } |  j d | ƒ d } d | } t } x– | | k rÚ | j ƒ  rg t } Pn  | d k rƒ t j d ƒ n  | | }	 |	 d k r¢ d }
+ n
+ | | }
+ d d |	 } | j	 |
+ | | ƒ | d 7} qE W| t k rø |  j d ƒ t S|  j
+ d	 ƒ t Sd
+ S(   sÐ  
+        Show a countdown dialog with a progress bar for XBMC while delaying 
+        execution. Necessary for some filehosters eg. megaupload
+        
+        The original version of this code came from Anarchintosh.
+        
+        Args:
+            time_to_wait (int): number of seconds to pause for.
+            
+        Kwargs:
+            title (str): Displayed in the title of the countdown dialog. Default
+            is blank.
+                         
+            text (str): A line of text to be displayed in the dialog. Default
+            is blank.
+            
+        Returns: 
+            ``True`` if countdown is allowed to complete, ``False`` if the 
+            user cancelled the countdown.
+        s   waiting %d secsi    id   iè  s   Wait %d seconds for the s   video stream to activate...i   s   countdown cancelleds   countdown finished waitingN(   RT   t   DialogProgresst   createRO   t   Falset
+   iscanceledR[   R    t   sleept   updateRM   (   R	   t   time_to_waitRW   t   textt   dialogt   rett   secst	   incrementt	   cancelledt	   secs_leftt   percentt   remaining_display(    (    sL   /storage/.xbmc/addons/script.module.ptr.common/lib/ptr/common/addon.pyt   show_countdownp  s2    
+
+	
+
+
+c         C   s   |  j  j ƒ  d S(   s)   Shows the settings dialog for this addon.N(   R   t   openSettings(   R	   (    (    sL   /storage/.xbmc/addons/script.module.ptr.common/lib/ptr/common/addon.pyt
+   show_settings¬  s    c         C   sl   | r< |  j  d | ƒ t j |  j t t j d | ƒ ƒ n, |  j d g ƒ t j |  j t t j ƒ  ƒ d S(   sþ  
+        Tell XBMC that you have resolved a URL (or not!).
+        
+        This method should be called as follows:
+        
+        #. The user selects a list item that has previously had ``isPlayable``
+           set (this is true for items added with :meth:`add_item`, 
+           :meth:`add_music_item` or :meth:`add_music_item`)
+        #. Your code resolves the item requested by the user to a media URL
+        #. Your addon calls this method with the resolved URL
+        
+        Args:
+            stream_url (str or ``False``): If a string, tell XBMC that the 
+            media URL ha been successfully resolved to stream_url. If ``False`` 
+            or an empty string tell XBMC the resolving failed and pop up an 
+            error messsage.
+        s   resolved to: %sR   s   sorry, failed to resolve URL :(N(	   RM   t
+   xbmcplugint   setResolvedUrlR   R[   RT   t   ListItemR\   Rc   (   R	   t
+   stream_url(    (    sL   /storage/.xbmc/addons/script.module.ptr.common/lib/ptr/common/addon.pyt   resolve_url±  s    c         C   s&   t  j | ƒ } | r" | j ƒ  n  | S(   sø  
+        Return a :class:`xbmc.Playlist` object of the specified type.
+        
+        The available playlist types are defined in the :mod:`xbmc` module and 
+        are currently as follows::
+        
+            xbmc.PLAYLIST_MUSIC = 0
+            xbmc.PLAYLIST_VIDEO = 1
+            
+        .. seealso::
+            
+            :meth:`get_music_playlist`, :meth:`get_video_playlist`
+            
+        Args:
+            pl_type (int): The type of playlist to get.
+            
+            new (bool): If ``False`` (default), get the current 
+            :class:`xbmc.Playlist` object of the type specified. If ``True`` 
+            then return a new blank :class:`xbmc.Playlist`.
+
+        Returns:
+            A :class:`xbmc.Playlist` object.
+        (   R    t   PlayListt   clear(   R	   t   pl_typet   newt   pl(    (    sL   /storage/.xbmc/addons/script.module.ptr.common/lib/ptr/common/addon.pyt   get_playlistÌ  s    
+c         C   s   |  j  t j | ƒ d S(   s³  
+        Convenience method to return a music :class:`xbmc.Playlist` object.
+        
+        .. seealso::
+        
+            :meth:`get_playlist`
+        
+        Kwargs:
+            new (bool): If ``False`` (default), get the current music 
+            :class:`xbmc.Playlist` object. If ``True`` then return a new blank
+            music :class:`xbmc.Playlist`.
+        Returns:
+            A :class:`xbmc.Playlist` object.
+       N(   R~   R    t   PLAYLIST_MUSIC(   R	   R|   (    (    sL   /storage/.xbmc/addons/script.module.ptr.common/lib/ptr/common/addon.pyt   get_music_playlistê  s    c         C   s   |  j  t j | ƒ d S(   sÁ  
+        Convenience method to return a video :class:`xbmc.Playlist` object.
+        
+        .. seealso::
+        
+            :meth:`get_playlist`
+        
+        Kwargs:
+            new (bool): If ``False`` (default), get the current video 
+            :class:`xbmc.Playlist` object. If ``True`` then return a new blank
+            video :class:`xbmc.Playlist`.
+            
+        Returns:
+            A :class:`xbmc.Playlist` object.
+        N(   R~   R    t   PLAYLIST_VIDEO(   R	   R|   (    (    sL   /storage/.xbmc/addons/script.module.ptr.common/lib/ptr/common/addon.pyt   get_video_playlistü  s    i    t   videoc         C   s&  |  j  | ƒ } | s: | s( d | d <n  |  j | ƒ } n | } t j | d d | d | ƒ}
+ |
+ j |
+ | ƒ |
+ j d d ƒ |
+ j d | ƒ | r« |
+ j | d	 | ƒn  |	 t k	 rå |  j d
+ | d | f ƒ |	 j	 | |
+ ƒ n= |  j d | d | f ƒ t
+ j |  j | |
+ d | d
+ | ƒd S(   sÌ  
+        Adds an item to the list of entries to be displayed in XBMC or to a 
+        playlist.
+        
+        Use this method when you want users to be able to select this item to
+        start playback of a media file. ``queries`` is a dict that will be sent 
+        back to the addon when this item is selected::
+        
+            add_item({'host': 'youtube.com', 'media_id': 'ABC123XYZ'}, 
+                     {'title': 'A youtube vid'})
+                     
+        will add a link to::
+        
+            plugin://your.plugin.id/?host=youtube.com&media_id=ABC123XYZ
+        
+        .. seealso::
+        
+            :meth:`add_music_item`, :meth:`add_video_item`, 
+            :meth:`add_directory`
+            
+        Args:
+            queries (dict): A set of keys/values to be sent to the addon when 
+            the user selects this item.
+            
+            infolabels (dict): A dictionary of information about this media 
+            (see the `XBMC Wiki InfoLabels entry 
+            <http://wiki.xbmc.org/?title=InfoLabels>`_).
+            
+        Kwargs:
+            
+            contextmenu_items (list): A list of contextmenu items
+            
+            context_replace (bool): To replace the xbmc default contextmenu items
+                    
+            img (str): A URL to an image file to be used as an icon for this
+            entry.
+            
+            fanart (str): A URL to a fanart image for this entry.
+            
+            resolved (str): If not empty, ``queries`` will be ignored and 
+            instead the added item will be the exact contentes of ``resolved``.
+            
+            total_items (int): Total number of items to be added in this list.
+            If supplied it enables XBMC to show a progress bar as the list of
+            items is being built.
+            
+            playlist (playlist object): If ``False`` (default), the item will 
+            be added to the list of entries to be displayed in this directory. 
+            If a playlist object is passed (see :meth:`get_playlist`) then 
+            the item will be added to the playlist instead
+    
+            item_type (str): The type of item to add (eg. 'music', 'video' or
+            'pictures')
+        R[   t   playRW   t	   iconImaget   thumbnailImaget
+   IsPlayablet   truet   fanart_imaget   replaceItemss    adding item: %s - %s to playlists   adding item: %s - %st   isFoldert
+   totalItemsN(
+   t
+   unescape_dictR?   RT   Rv   t   setInfot   setPropertyt   addContextMenuItemsRc   RM   t   addRt   t   addDirectoryItemR   (   R	   R   t
+   infolabelst   contextmenu_itemst   context_replacet   imgR   t   resolvedt   total_itemst   playlistt	   item_typet	   is_folderR„   t   listitem(    (    sL   /storage/.xbmc/addons/script.module.ptr.common/lib/ptr/common/addon.pyt   add_item  s*    9
+		c
+   
+      C   s/   |  j  | | | | | | | | |	 d d ƒ	d S(   s    
+        Convenience method to add a video item to the directory list or a 
+        playlist.
+        
+        See :meth:`add_item` for full infomation
+        Rš   Rƒ   N(   R   (
+   R	   R   R“   R”   R•   R–   R   R—   R˜   R™   (    (    sL   /storage/.xbmc/addons/script.module.ptr.common/lib/ptr/common/addon.pyt   add_video_itema  s    c
+   
+      C   s/   |  j  | | | | | | | | |	 d d ƒ	d S(   s    
+        Convenience method to add a music item to the directory list or a 
+        playlist.
+        
+        See :meth:`add_item` for full infomation
+        Rš   t   musicN(   R   (
+   R	   R   R“   R”   R•   R–   R   R—   R˜   R™   (    (    sL   /storage/.xbmc/addons/script.module.ptr.common/lib/ptr/common/addon.pyt   add_music_itemm  s    c	   	   
+   C   s;   |  j  | | | | | | d | d |  j | ƒ d | ƒd S(   s   
+        Convenience method to add a directory to the display list or a 
+        playlist.
+        
+        See :meth:`add_item` for full infomation
+        R˜   R—   R›   N(   R   R?   (	   R	   R   R“   R”   R•   R–   R   R˜   R›   (    (    sL   /storage/.xbmc/addons/script.module.ptr.common/lib/ptr/common/addon.pyt
+   add_directoryy  s    c         C   s   t  j |  j ƒ d S(   s?   Tell XBMC that we have finished adding items to this directory.N(   Rt   t   endOfDirectoryR   (   R	   (    (    sL   /storage/.xbmc/addons/script.module.ptr.common/lib/ptr/common/addon.pyt   end_of_directory…  s    c         C   s2   | j  d ƒ } y t t | ƒ ƒ SWn | SXd S(   s'   Callback method used by :meth:`decode`.i   N(   t   groupt   unichrR   (   R	   t   matchesR   (    (    sL   /storage/.xbmc/addons/script.module.ptr.common/lib/ptr/common/addon.pyt   _decode_callbackŠ  s
+    c         C   s   t  j d |  j | ƒ j ƒ  S(   sÙ  
+        Regular expression to convert entities such as ``&#044`` to the correct
+        characters. It is called by :meth:`unescape` and so it is not required
+        to call it directly.
+        
+        This method was found `on the web <http://stackoverflow.com/questions/1208916/decoding-html-entities-with-python/1208931#1208931>`_
+        
+        Args:
+            data (str): String to be cleaned.
+            
+        Returns:
+            Cleaned string.
+        s   &#(\d+)(;|(?=\s))(   t   ret   subR§   t   strip(   R	   t   data(    (    sL   /storage/.xbmc/addons/script.module.ptr.common/lib/ptr/common/addon.pyt   decode“  s    c         C   s•   y} |  j  | ƒ } i d d 6d d 6d d 6d d 6d d	 6} x, | j ƒ  D] \ } } | j | | ƒ } qH W| j d
+ d ƒ } Wn t k
+ r n X| S(   sù   
+        Decodes HTML entities in a string.
+        
+        You can add more entities to the ``rep`` dictionary.
+        
+        Args:
+            text (str): String to be cleaned.
+            
+        Returns:
+            Cleaned string.
+        t   <s   &lt;t   >s   &gt;t   "s   &quots   's   &rsquo;s   &acute;s   &amp;t   &(   R¬   R5   t   replacet	   TypeError(   R	   Rh   t   rept   st   r(    (    sL   /storage/.xbmc/addons/script.module.ptr.common/lib/ptr/common/addon.pyt   unescape¤  s    
+
+
+c         C   s:   i  } x- | j  ƒ  D] \ } } |  j | ƒ | | <q W| S(   sý   
+        Calls :meth:`unescape` on all values in a dictionary.
+        
+        Args:
+            d (dict): A dictionary containing string values
+            
+        Returns:
+            A dictionary with HTML entities removed from the values.
+        (   R5   R¶   (   R	   t   dt   outR:   R;   (    (    sL   /storage/.xbmc/addons/script.module.ptr.common/lib/ptrcommon/addon.pyR   Ä  s    
+c         C   sy   |  j  ƒ  } y t j | ƒ Wn n Xt j j | | ƒ } y! t j | t | d ƒ ƒ t SWn t j	 k
+ rt t
+ SXd S(   s  
+        Saves the data structure using pickle. If the addon data path does 
+        not exist it will be automatically created. This save function has
+        the same restrictions as the pickle module.
+        
+        Args:
+            filename (string): name of the file you want to save data to. This 
+            file will be saved in your addon's profile directory.
+            
+            data (data object/string): you want to save.
+            
+        Returns:
+            True on success
+            False on failure
+        t   wbN(   R"   t   ost   makedirsR   RR   t   picklet   dumpt   openR[   t   PickleErrorRc   (   R	   t   filenameR«   t   profile_patht	   save_path(    (    sL   /storage/.xbmc/addons/script.module.ptr.common/lib/ptr/common/addon.pyt	   save_dataÓ  s    c         C   su   |  j  ƒ  } t j j | | ƒ } | GHt j j | ƒ sM |  j d | ƒ t Sy t j t	 | ƒ ƒ } Wn t SX| S(   ss  
+        Load the data that was saved with save_data() and returns the
+        data structure.
+        
+        Args:
+            filename (string): Name of the file you want to load data from. This
+            file will be loaded from your addons profile directory.
+            
+        Returns:
+            Data stucture on success
+            False on failure
+        s   %s does not exist(
+   R"   Rº   R   RR   t   isfileRM   Rc   R¼   t   loadR¾   (   R	   RÀ   RÁ   t	   load_pathR«   (    (    sL   /storage/.xbmc/addons/script.module.ptr.common/lib/ptr/common/addon.pyt	   load_dataï  s    
+N(3   t   __name__t
+   __module__t   __doc__t   NoneR   R   R   R   R   R   R   R   R   R   R"   R$   R&   R(   R*   R-   R0   R   R?   R    RN   RG   RK   RM   RO   Rc   RZ   R\   R`   Rq   Rs   Rx   R~   R€   R‚   R   Rž   R    R[   R¡   R£   R§   R¬   R¶   R   RÃ   RÇ   (    (    (    sL   /storage/.xbmc/addons/script.module.ptr.common/lib/ptr/common/addon.pyR    !   sb   																		
+		
+)	<			P					 		(    (
+   RÊ   R3   R¨   Rº   t   cPickleR¼   RC   R=   R    R   RT   Rt   R    (    (    (    sL   /storage/.xbmc/addons/script.module.ptr.common/lib/ptr/common/addon.pyt   <module>   s   
